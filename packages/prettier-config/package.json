@@ -1,0 +1,19 @@
+{
+  "name": "@bclawlibrary/prettier-config",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": "./index.mjs",
+  "files": ["index.mjs"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BCLawLibrary/frontend-config.git",
+    "directory": "packages/prettier-config"
+  },
+  "publishConfig": { "registry": "https://npm.pkg.github.com" },
+  "dependencies": {
+    "prettier-plugin-tailwindcss": "^0.8.1"
+  },
+  "peerDependencies": {
+    "prettier": ">=3"
+  }
+}

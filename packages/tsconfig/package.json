@@ -1,0 +1,11 @@
+{
+  "name": "@bclawlibrary/tsconfig",
+  "version": "1.0.0",
+  "files": ["tsconfig.json"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BCLawLibrary/frontend-config.git",
+    "directory": "packages/tsconfig"
+  },
+  "publishConfig": { "registry": "https://npm.pkg.github.com" }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "frontend-config",
+  "private": true,
+  "workspaces": ["packages/*"]
+}
