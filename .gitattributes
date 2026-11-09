@@ -1,0 +1,4 @@
+# Store and check out every text file with Unix (LF) line endings, on every
+# computer. Windows otherwise switches files to CRLF, and Prettier would then
+# report every file as wrongly formatted.
+* text=auto eol=lf

@@ -4,8 +4,8 @@
   "files": ["tsconfig.json"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/BCLawLibrary/frontend-config.git",
+    "url": "https://github.com/BCLawLibrary/app-configurations.git",
     "directory": "packages/tsconfig"
   },
-  "publishConfig": { "registry": "https://npm.pkg.github.com" }
+  "publishConfig": { "access": "public" }
 }

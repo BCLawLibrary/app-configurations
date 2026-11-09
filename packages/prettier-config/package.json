@@ -6,10 +6,10 @@
   "files": ["index.mjs"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/BCLawLibrary/frontend-config.git",
+    "url": "https://github.com/BCLawLibrary/app-configurations.git",
     "directory": "packages/prettier-config"
   },
-  "publishConfig": { "registry": "https://npm.pkg.github.com" },
+  "publishConfig": { "access": "public" },
   "dependencies": {
     "prettier-plugin-tailwindcss": "^0.8.1"
   },

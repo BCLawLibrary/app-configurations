@@ -7,10 +7,10 @@
   "files": ["index.mjs"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/BCLawLibrary/frontend-config.git",
+    "url": "https://github.com/BCLawLibrary/app-configurations.git",
     "directory": "packages/eslint-config"
   },
-  "publishConfig": { "registry": "https://npm.pkg.github.com" },
+  "publishConfig": { "access": "public" },
   "peerDependencies": {
     "eslint": "^10",
     "eslint-config-next": ">=16.4.0"

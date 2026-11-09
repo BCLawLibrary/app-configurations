@@ -1,4 +1,4 @@
-# frontend-config
+# app-configurations
 
 Shared configuration for BC Law Next.js apps. Each app installs these packages instead of keeping its own copies, so a rule changes in one place and reaches every app through a Dependabot PR.
 
@@ -8,7 +8,7 @@ Shared configuration for BC Law Next.js apps. Each app installs these packages i
 | [`@bclawlibrary/tsconfig`](packages/tsconfig) | Extra TypeScript strictness on top of the `tsconfig.json` Next.js generates |
 | [`@bclawlibrary/prettier-config`](packages/prettier-config) | Prettier defaults plus Tailwind class sorting |
 
-The packages are **private** and published to **GitHub Packages**. Installing them needs a token (see [One-time setup](#one-time-setup-per-developer)).
+The packages are public on [npm](https://www.npmjs.com/org/bclawlibrary), so installing them needs no token or account. You need Node.js 22.13 or newer.
 
 ---
 
@@ -37,8 +37,6 @@ Starts from `eslint-config-next` (Core Web Vitals + TypeScript), then adds:
 
 **Test files** (`*.test.ts`, `*.test.tsx`) are exempt from the function length, one-component and nested-callback rules.
 
-**Not checked by lint, but expected:** one hook or helper per `.ts` file. Reviewers check this.
-
 ### TypeScript (`@bclawlibrary/tsconfig`)
 
 Adds these flags on top of the app's own `tsconfig.json`, which Next.js creates and keeps up to date:
@@ -57,21 +55,6 @@ Prettier's defaults plus `prettier-plugin-tailwindcss`, which sorts Tailwind cla
 
 ---
 
-## One-time setup (per developer)
-
-You need Node.js 22.13 or newer. Check with `node --version`.
-
-1. Create a GitHub **classic** personal access token with only the **`read:packages`** scope.
-2. Save it as a user environment variable named `NPM_TOKEN`.
-3. Quit and reopen your terminal and editor.
-4. Check it worked. This should print a version number:
-
-   ```bash
-   npm view "@bclawlibrary/eslint-config" version
-   ```
-
----
-
 ## Editor setup
 
 Optional: lint, type checks and formatting also run in CI.
@@ -83,20 +66,11 @@ Optional: lint, type checks and formatting also run in CI.
 
 ## Adding the packages to an app
 
-New apps start from our **template repository** (GitHub's **Use this template** button), which already includes steps 1–7. For a new app, skip to [step 8](#8-settings-that-the-template-repository-cant-copy).
+New apps start from our **template repository** (GitHub's **Use this template** button), which already includes steps 1–6. For a new app, skip to [step 7](#7-settings-that-the-template-repository-cant-copy).
 
-Steps 1–7 are only for building the template itself, or for adding the packages to an older app (like the events calendar).
+Steps 1–6 are only for building the template itself, or for adding the packages to an older app (like the events calendar).
 
-### 1. Point the `@bclawlibrary` scope at GitHub Packages
-
-Add `.npmrc` to the app root:
-
-```
-@bclawlibrary:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${NPM_TOKEN}
-```
-
-### 2. Install
+### 1. Install
 
 ```bash
 npm i -D "@bclawlibrary/eslint-config" "@bclawlibrary/tsconfig" "@bclawlibrary/prettier-config" "eslint@^10" eslint-config-next prettier "typescript@~6.0.0"
@@ -104,7 +78,7 @@ npm i -D "@bclawlibrary/eslint-config" "@bclawlibrary/tsconfig" "@bclawlibrary/p
 
 Keep `eslint-config-next` on the same version as `next`. A few `ERESOLVE overriding peer dependency` warnings are expected and harmless.
 
-### 3. `tsconfig.json`
+### 2. `tsconfig.json`
 
 Keep the file `create-next-app` generated and add one line at the top:
 
@@ -115,7 +89,7 @@ Keep the file `create-next-app` generated and add one line at the top:
 }
 ```
 
-### 4. `eslint.config.mjs`
+### 3. `eslint.config.mjs`
 
 ```js
 import { defineConfig, globalIgnores } from "eslint/config";
@@ -127,7 +101,7 @@ export default defineConfig([
 ]);
 ```
 
-### 5. `package.json`
+### 4. `package.json`
 
 ```json
 {
@@ -142,7 +116,7 @@ export default defineConfig([
 
 `--max-warnings 0` makes warnings fail too. Run `npm run format` once after `create-next-app`.
 
-### 6. Line endings (`.gitattributes`)
+### 5. Line endings (`.gitattributes`)
 
 Add `.gitattributes` to the app root so every computer uses the line endings Prettier expects:
 
@@ -150,7 +124,7 @@ Add `.gitattributes` to the app root so every computer uses the line endings Pre
 * text=auto eol=lf
 ```
 
-### 7. CI
+### 6. CI
 
 Run these on every pull request:
 
@@ -160,31 +134,9 @@ npx tsc --noEmit
 npm run format:check
 ```
 
-In GitHub Actions, give the workflow `permissions: packages: read` and set `NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}` for the install step.
+### 7. Settings that the template repository can't copy
 
-### 8. Settings that the template repository can't copy
-
-Do these once for each new app repo:
-
-- [ ] **Package access:** in each package's settings on GitHub → **Manage Actions access** → add the app repo with **Read**.
-- [ ] **Firebase App Hosting:** let the backend read the token during builds:
-
-  ```bash
-  firebase apphosting:secrets:grantaccess NPM_TOKEN --backend YOUR_BACKEND_NAME
-  ```
-
-  and in `apphosting.yaml`:
-
-  ```yaml
-  env:
-    - variable: NPM_TOKEN
-      secret: NPM_TOKEN
-      availability:
-        - BUILD
-  ```
-
-  (The `NPM_TOKEN` secret itself is created once per Firebase project with `firebase apphosting:secrets:set NPM_TOKEN`.)
-- [ ] **Dependabot:** turn on alerts and security updates in the repo's settings.
+Turn on Dependabot alerts and security updates in the new repo's settings.
 
 ---
 
@@ -205,7 +157,7 @@ Don't loosen rules in an app's `eslint.config.mjs`. If a rule is wrong for every
 
 ## Releasing a change
 
-Each package is versioned and published on its own. Pushing a tag named `<package>-v<version>` publishes that package. Run these one line at a time:
+Each package is versioned and published on its own. Pushing a tag named `<package>-v<version>` publishes that package from GitHub Actions, so nobody needs to sign in to npm. Run these one line at a time:
 
 ```bash
 npm version minor --workspace packages/eslint-config
@@ -225,6 +177,8 @@ Which version number to bump:
 
 After the release, Dependabot opens an upgrade PR in each app, and that app's CI shows whether the change breaks anything.
 
+The npm organization `bclawlibrary` is owned by the `bclaw-atr-team` account. Its login is in the LAW.ATR vault in 1Password, for admin tasks only.
+
 ---
 
 ## Version notes
@@ -237,7 +191,7 @@ After the release, Dependabot opens an upgrade PR in each app, and that app's CI
 ## Repo layout
 
 ```
-frontend-config/
+app-configurations/
 ├── package.json              npm workspaces root (private, never published)
 ├── .gitattributes            forces LF line endings
 ├── .github/workflows/
