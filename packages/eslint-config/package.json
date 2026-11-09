@@ -4,13 +4,17 @@
   "description": "Shared ESLint config and guardrails for BC Law Next.js apps",
   "type": "module",
   "exports": "./index.mjs",
-  "files": ["index.mjs"],
+  "files": [
+    "index.mjs"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/BCLawLibrary/app-configurations.git",
+    "url": "git+https://github.com/BCLawLibrary/app-configurations.git",
     "directory": "packages/eslint-config"
   },
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "eslint": "^10",
     "eslint-config-next": ">=16.4.0"
