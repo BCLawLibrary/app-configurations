@@ -157,15 +157,26 @@ Don't loosen rules in an app's `eslint.config.mjs`. If a rule is wrong for every
 
 ## Releasing a change
 
-Each package is versioned and published on its own. Pushing a tag named `<package>-v<version>` publishes that package from GitHub Actions, so nobody needs to sign in to npm. Run these one line at a time:
+Each package is versioned and published on its own. Pushing a tag named `<package>-v<version>` publishes that package from GitHub Actions, so nobody needs to sign in to npm.
 
-```bash
-npm version minor --workspace packages/eslint-config
-git commit -am "eslint-config 1.1.0"
-git tag eslint-config-v1.1.0
-git push
-git push origin eslint-config-v1.1.0
-```
+1. On a branch, bump the version along with your change, then open a pull request and merge it:
+
+   ```bash
+   npm version minor --workspace packages/eslint-config --no-workspaces-update
+   ```
+
+   `--no-workspaces-update` stops npm from trying to install everything afterward, which fails on ESLint 10 peer warnings.
+
+2. After merging, tag the merged commit on `main`:
+
+   ```bash
+   git switch main
+   git pull
+   git tag eslint-config-v1.1.0
+   git push origin eslint-config-v1.1.0
+   ```
+
+3. In the repo's **Actions** tab, open the waiting "Publish package" run → **Review deployments** → approve `npm`.
 
 Which version number to bump:
 

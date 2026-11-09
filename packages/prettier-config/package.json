@@ -1,6 +1,6 @@
 {
   "name": "@bclawlibrary/prettier-config",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "exports": "./index.mjs",
   "files": [
@@ -19,5 +19,6 @@
   },
   "peerDependencies": {
     "prettier": ">=3"
-  }
+  },
+  "description": "Shared Prettier config with Tailwind class sorting for BC Law Next.js apps"
 }

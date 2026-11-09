@@ -1,6 +1,6 @@
 {
   "name": "@bclawlibrary/tsconfig",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "files": [
     "tsconfig.json"
   ],
@@ -11,5 +11,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "description": "Shared TypeScript strictness settings for BC Law Next.js apps"
 }
