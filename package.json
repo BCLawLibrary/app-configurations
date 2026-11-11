@@ -2,5 +2,16 @@
   "name": "shared-packages",
   "description": "Workspace root that holds the packages in packages/. Never published (private: true); each package is published on its own.",
   "private": true,
-  "workspaces": ["packages/*"]
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "check": "npm run typecheck --workspaces --if-present && npm run build --workspaces --if-present && npm test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "eslint": "^10"
+  },
+  "overrides": {
+    "eslint-plugin-jsx-a11y": {
+      "eslint": "$eslint"
+    }
+  }
 }

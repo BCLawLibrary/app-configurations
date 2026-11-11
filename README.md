@@ -157,6 +157,17 @@ Don't loosen rules in an app's `eslint.config.mjs`. If a rule is wrong for every
 
 ---
 
+## Working on this repo
+
+```bash
+npm install
+npm run check
+```
+
+`npm run check` runs every package's type check, build and tests (packages without them are skipped). The **Check** workflow runs the same command on every pull request and on every push to `main`, and the publish workflow runs it again before releasing.
+
+---
+
 ## Releasing a change
 
 Each package is versioned and published on its own. Pushing a tag named `<package>-v<version>` publishes that package from GitHub Actions, so nobody needs to sign in to npm.
@@ -164,10 +175,10 @@ Each package is versioned and published on its own. Pushing a tag named `<packag
 1. On a branch, bump the version along with your change, then open a pull request and merge it:
 
    ```bash
-   npm version minor --workspace packages/eslint-config --no-workspaces-update
+   npm version minor --workspace packages/eslint-config
    ```
 
-   `--no-workspaces-update` stops npm from trying to install everything afterward, which fails on ESLint 10 peer warnings.
+   This updates both the package's `package.json` and the repo's `package-lock.json`. Commit both.
 
 2. After merging, tag the merged commit on `main`:
 
@@ -198,6 +209,7 @@ The npm organization `bclawlibrary` is owned by the `bclaw-atr-team` account. It
 
 - **ESLint 10:** ESLint 9 is no longer supported.
 - **TypeScript `~6.0`:** our lint tools don't support newer TypeScript yet, so each app's Dependabot config holds it back. Lift both once `typescript-eslint` supports it.
+- **`eslint-plugin-jsx-a11y` override:** the plugin doesn't officially support ESLint 10 yet, so without help the repo won't install. The `overrides` entry in the root `package.json` lets it use the repo's ESLint 10. Remove it once the plugin supports ESLint 10.
 
 ---
 
@@ -205,10 +217,12 @@ The npm organization `bclawlibrary` is owned by the `bclaw-atr-team` account. It
 
 ```
 shared-packages/
-├── package.json              npm workspaces root (private, never published)
+├── package.json              npm workspaces root (private, never published), `npm run check`
+├── package-lock.json         exact versions, used by CI
 ├── .gitattributes            forces LF line endings
 ├── .github/workflows/
-│   └── publish.yml           publishes a package when its tag is pushed
+│   ├── check.yml             runs `npm run check` on every pull request
+│   └── publish.yml           checks, then publishes a package when its tag is pushed
 └── packages/
     ├── eslint-config/        index.mjs, package.json
     ├── tsconfig/             tsconfig.json, package.json
