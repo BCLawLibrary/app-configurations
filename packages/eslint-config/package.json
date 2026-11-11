@@ -1,6 +1,6 @@
 {
   "name": "@bclawlibrary/eslint-config",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Shared ESLint config and guardrails for BC Law Next.js apps",
   "type": "module",
   "exports": "./index.mjs",
@@ -20,6 +20,7 @@
     "eslint-config-next": ">=16.4.0"
   },
   "dependencies": {
+    "@tanstack/eslint-plugin-query": "^5.107.1",
     "eslint-plugin-functional": "^10.0.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-sonarjs": "^4.2.2"

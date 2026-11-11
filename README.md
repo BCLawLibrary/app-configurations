@@ -34,6 +34,8 @@ Starts from `eslint-config-next` (Core Web Vitals + TypeScript), then adds:
 | Functional style | `no-param-reassign` (with `props: true`) | Don't change a function's inputs |
 | Async | `@typescript-eslint/no-floating-promises` | Every promise is awaited or handled |
 | Accessibility | `jsx-a11y` strict set, as errors | Keyboard support, labels, alt text, valid ARIA |
+| Data fetching | `@tanstack/eslint-plugin-query` recommended set | TanStack Query mistakes, such as a cache key that leaves out something the request uses, or a new `QueryClient` on every render |
+| Icons | `no-restricted-imports`, `react/forbid-elements` | Font Awesome's free icons only: `FontAwesomeIcon` from `@fortawesome/react-fontawesome` with icons from `@fortawesome/free-solid-svg-icons`, `free-regular-svg-icons` or `free-brands-svg-icons`. No Pro packages or kits, no other icon libraries, no hand-written `<svg>` |
 
 **Test files** (`*.test.ts`, `*.test.tsx`) are exempt from the function length, one-component and nested-callback rules.
 
