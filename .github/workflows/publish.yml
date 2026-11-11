@@ -45,5 +45,11 @@ jobs:
             exit 1
           fi
 
+      - name: Install dependencies (a package may need them to build)
+        run: npm ci
+
+      - name: Run the same checks as pull requests
+        run: npm run check
+
       - name: Publish
         run: npm publish --workspace "packages/${{ steps.tag.outputs.pkg }}"
