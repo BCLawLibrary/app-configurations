@@ -1,0 +1,60 @@
+{
+  "name": "@bclawlibrary/firebase-routes",
+  "version": "0.1.0",
+  "description": "Next.js routes that only answer signed-in BC users (Firebase + Google sign-in), and the browser code to sign in and call them",
+  "type": "module",
+  "exports": {
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "default": "./dist/server/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "default": "./dist/client/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "default": "./dist/testing/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BCLawLibrary/shared-packages.git",
+    "directory": "packages/firebase-routes"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc -p tsconfig.build.json",
+    "prepack": "npm run build",
+    "typecheck": "tsc --noEmit",
+    "test": "firebase emulators:exec --project demo-firebase-routes --only auth \"vitest run\""
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5",
+    "firebase": "^13",
+    "firebase-admin": "^14",
+    "next": ">=16.4.0",
+    "react": "^19",
+    "zod": "^4"
+  },
+  "devDependencies": {
+    "@bclawlibrary/tsconfig": "^1.0.1",
+    "@tanstack/react-query": "^5.107.1",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "firebase": "^13.2.0",
+    "firebase-admin": "^14.5.0",
+    "firebase-tools": "^15.35.0",
+    "next": "16.4.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "typescript": "~6.0.0",
+    "vitest": "^4",
+    "zod": "^4.6.7"
+  }
+}

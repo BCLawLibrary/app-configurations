@@ -1,12 +1,13 @@
 # shared-packages
 
-Shared configuration for BC Law Next.js apps. Each app installs these packages instead of keeping its own copies, so a rule changes in one place and reaches every app through a Dependabot PR.
+Shared configuration and code for BC Law Next.js apps. Each app installs these packages instead of keeping its own copies, so a change happens in one place and reaches every app through a Dependabot PR.
 
 | Package | What it gives an app |
 |---|---|
 | [`@bclawlibrary/eslint-config`](packages/eslint-config) | Next.js lint rules plus our guardrails: size, complexity, functional style, accessibility |
 | [`@bclawlibrary/tsconfig`](packages/tsconfig) | Extra TypeScript strictness on top of the `tsconfig.json` Next.js generates |
 | [`@bclawlibrary/prettier-config`](packages/prettier-config) | Prettier defaults plus Tailwind class sorting |
+| [`@bclawlibrary/firebase-routes`](packages/firebase-routes) | The standard way to build API routes: every route needs a signed-in BC user (Google sign-in through Firebase), with the browser code to sign in and call them |
 
 The packages are public on [npm](https://www.npmjs.com/org/bclawlibrary), so installing them needs no token or account. You need Node.js 22.13 or newer.
 
@@ -226,5 +227,6 @@ shared-packages/
 └── packages/
     ├── eslint-config/        index.mjs, package.json
     ├── tsconfig/             tsconfig.json, package.json
-    └── prettier-config/      index.mjs, package.json
+    ├── prettier-config/      index.mjs, package.json
+    └── firebase-routes/      src/, README.md, package.json (built to dist/ when published)
 ```
