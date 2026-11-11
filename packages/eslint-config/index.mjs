@@ -3,10 +3,15 @@ import nextTs from "eslint-config-next/typescript";
 import a11y from "eslint-plugin-jsx-a11y";
 import sonarjs from "eslint-plugin-sonarjs";
 import functional from "eslint-plugin-functional";
+import pluginQuery from "@tanstack/eslint-plugin-query";
+
+const USE_FONT_AWESOME =
+  "Use Font Awesome's free icons: FontAwesomeIcon from @fortawesome/react-fontawesome with an icon from @fortawesome/free-solid-svg-icons, free-regular-svg-icons or free-brands-svg-icons.";
 
 export default [
   ...nextVitals,
   ...nextTs,
+  ...pluginQuery.configs["flat/recommended"],
 
   // BC Law guardrails (all files)
   {
@@ -49,6 +54,46 @@ export default [
     rules: {
       "functional/immutable-data": "error",
       "@typescript-eslint/no-floating-promises": "error",
+    },
+  },
+
+  // Icons: Font Awesome's free icons only
+  {
+    rules: {
+      "no-restricted-imports": ["error", {
+        patterns: [
+          {
+            group: [
+              "@fortawesome/*",
+              "!@fortawesome/react-fontawesome",
+              "!@fortawesome/fontawesome-svg-core",
+              "!@fortawesome/free-solid-svg-icons",
+              "!@fortawesome/free-regular-svg-icons",
+              "!@fortawesome/free-brands-svg-icons",
+            ],
+            message: USE_FONT_AWESOME,
+          },
+          {
+            group: [
+              "@awesome.me/*",
+              "lucide-react",
+              "react-icons",
+              "react-icons/*",
+              "@heroicons/*",
+              "@radix-ui/react-icons",
+              "@tabler/icons-react",
+              "@phosphor-icons/*",
+              "@mui/icons-material",
+              "@mui/icons-material/*",
+              "@iconify/*",
+              "react-bootstrap-icons",
+              "bootstrap-icons",
+            ],
+            message: USE_FONT_AWESOME,
+          },
+        ],
+      }],
+      "react/forbid-elements": ["error", { forbid: [{ element: "svg", message: USE_FONT_AWESOME }] }],
     },
   },
 
