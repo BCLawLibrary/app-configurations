@@ -1,4 +1,4 @@
-# app-configurations
+# shared-packages
 
 Shared configuration for BC Law Next.js apps. Each app installs these packages instead of keeping its own copies, so a rule changes in one place and reaches every app through a Dependabot PR.
 
@@ -204,7 +204,7 @@ The npm organization `bclawlibrary` is owned by the `bclaw-atr-team` account. It
 ## Repo layout
 
 ```
-app-configurations/
+shared-packages/
 ├── package.json              npm workspaces root (private, never published)
 ├── .gitattributes            forces LF line endings
 ├── .github/workflows/
