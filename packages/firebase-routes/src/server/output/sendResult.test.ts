@@ -39,6 +39,7 @@ describe("sendResult", () => {
     ["unauthenticated", 401],
     ["forbidden", 403],
     ["not_found", 404],
+    ["too_large", 413],
     ["internal", 500],
   ] as const)(
     "sends a %s failure as %i with its message",

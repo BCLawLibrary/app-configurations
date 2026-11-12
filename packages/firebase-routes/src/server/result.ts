@@ -2,7 +2,12 @@
 // when it didn't. The message is shown to the person, so write it for them.
 
 export type Reason =
-  "invalid" | "unauthenticated" | "forbidden" | "not_found" | "internal";
+  | "invalid"
+  | "unauthenticated"
+  | "forbidden"
+  | "not_found"
+  | "too_large"
+  | "internal";
 
 export type Failure = { ok: false; reason: Reason; message: string };
 

@@ -1,6 +1,6 @@
 {
   "name": "@bclawlibrary/firebase-routes",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Next.js routes that only answer signed-in BC users (Firebase + Google sign-in), and the browser code to sign in and call them",
   "type": "module",
   "exports": {
@@ -38,7 +38,7 @@
     "@tanstack/react-query": "^5",
     "firebase": "^13",
     "firebase-admin": "^14",
-    "next": ">=16.4.0",
+    "next": ">=16.4.0 <17",
     "react": "^19",
     "zod": "^4"
   },

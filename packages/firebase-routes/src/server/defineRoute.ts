@@ -18,8 +18,10 @@ type RouteSettings<Input, Output> = {
   input: Schema<Input>;
   // What the caller gets back. Fields not named here are never sent.
   output: Schema<Output>;
-  // The HTTP status on success. Defaults to 200.
-  status?: number;
+  // The HTTP status on success: 200 (the default), 201 for "created", or
+  // 202 for "accepted, still working". Responses always have a body, so
+  // statuses without one, like 204, aren't allowed.
+  status?: 200 | 201 | 202;
   // The operation that does the work. NoInfer makes TypeScript take Output from
   // the output schema only, so an operation that returns too little is an error.
   run: (
