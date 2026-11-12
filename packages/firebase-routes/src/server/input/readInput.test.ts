@@ -11,6 +11,8 @@ function rawPost(body: string): Request {
   return new Request("http://test/x", { method: "POST", body });
 }
 
+const ONE_MB_AND_A_BIT = 1_000_001;
+
 describe("readInput", () => {
   it("combines the URL values and the body, keeping only the fields the schema names", async () => {
     const request = apiRequest("POST", "/x", {
@@ -76,5 +78,57 @@ describe("readInput", () => {
       reason: "invalid",
       message: "The request body must be a JSON object.",
     });
+  });
+
+  it("ignores the query string on requests that send a body", async () => {
+    const request = apiRequest("POST", "/x?title=from-the-query", { body: {} });
+    const result = await readInput(
+      request,
+      routeParams({ id: "1" }),
+      UpdateInput,
+    );
+    expect(result.ok ? undefined : result.reason).toBe("invalid");
+  });
+
+  it("turns away a URL value containing '/', which could reach a different record", async () => {
+    const request = apiRequest("POST", "/x", { body: { title: "a" } });
+    const result = await readInput(
+      request,
+      routeParams({ id: "x/sub/y" }),
+      UpdateInput,
+    );
+    expect(result).toEqual({
+      ok: false,
+      reason: "invalid",
+      message: "A value in the URL can't contain '/'.",
+    });
+  });
+
+  it("turns away a body over 1 MB", async () => {
+    const big = JSON.stringify({ title: "a".repeat(ONE_MB_AND_A_BIT) });
+    const result = await readInput(
+      rawPost(big),
+      routeParams({ id: "1" }),
+      UpdateInput,
+    );
+    expect(result).toEqual({
+      ok: false,
+      reason: "too_large",
+      message: "The request body is too large.",
+    });
+  });
+
+  it("turns away a body that says it's over 1 MB, before reading it", async () => {
+    const request = new Request("http://test/x", {
+      method: "POST",
+      headers: { "content-length": String(ONE_MB_AND_A_BIT) },
+      body: "{}",
+    });
+    const result = await readInput(
+      request,
+      routeParams({ id: "1" }),
+      UpdateInput,
+    );
+    expect(result.ok ? undefined : result.reason).toBe("too_large");
   });
 });

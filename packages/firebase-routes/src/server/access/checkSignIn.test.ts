@@ -55,9 +55,27 @@ describe("checkSignIn", () => {
     expect(result.ok ? undefined : result.reason).toBe("unauthenticated");
   });
 
+  it.each(["github.com", "microsoft.com", "apple.com"])(
+    "turns away a %s sign-in, even with a verified @bc.edu address",
+    async (provider) => {
+      const token = await signInTestUser("mallory@bc.edu", "Mallory", {
+        provider,
+      });
+      const result = await checkSignIn(requestWith(token));
+      expect(result.ok ? undefined : result.reason).toBe("forbidden");
+    },
+  );
+
   it.each([
     ["a Google account outside BC", "someone@gmail.com", true],
     ["an unverified @bc.edu address", "unverified@bc.edu", false],
+    ["a domain that only ends in 'bc.edu'", "someone@notbc.edu", true],
+    [
+      "a domain that only starts with 'bc.edu'",
+      "someone@bc.edu.example.com",
+      true,
+    ],
+    ["a subdomain of bc.edu", "someone@sub.bc.edu", true],
   ])("turns away %s", async (_label, email, verified) => {
     const token = await signInTestUser(email, "Someone", { verified });
     const result = await checkSignIn(requestWith(token));

@@ -27,6 +27,12 @@ const ErrorBody = z.object({ error: z.string() });
 export async function callApi<Path extends string, Output>(
   call: ApiCall<Path, Output>,
 ): Promise<Output> {
+  if (!staysOnThisSite(call.path)) {
+    throw new Error(
+      `callApi only calls this app's own /api routes, not ${call.path}`,
+    );
+  }
+
   const hasBody = call.body !== undefined;
   const response = await fetch(urlWithQuery(call.path, call.query), {
     method: call.method ?? "GET",
@@ -39,6 +45,15 @@ export async function callApi<Path extends string, Output>(
     throw new Error(failureMessage(answer), { cause: response.status });
   }
   return call.output.parse(answer);
+}
+
+// The sign-in token must never leave this app. Types already catch a wrong
+// path while you write code; this also catches one built from data at runtime,
+// like "https://other.site/api/x" or "/\\other.site/api/x".
+function staysOnThisSite(path: string): boolean {
+  const thisSite = "http://this.site";
+  const target = new URL(path, thisSite);
+  return target.origin === thisSite && target.pathname.startsWith("/api/");
 }
 
 // The person's sign-in token (when someone is signed in), and the body's format.

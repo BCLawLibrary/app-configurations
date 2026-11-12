@@ -4,7 +4,7 @@
 export async function signInTestUser(
   email: string,
   name?: string,
-  options: { verified?: boolean } = {},
+  options: { verified?: boolean; provider?: string } = {},
 ): Promise<string> {
   const host = process.env.FIREBASE_AUTH_EMULATOR_HOST;
   if (!host)
@@ -18,7 +18,8 @@ export async function signInTestUser(
     email_verified: options.verified ?? true,
     name,
   };
-  const postBody = `id_token=${encodeURIComponent(JSON.stringify(claims))}&providerId=google.com`;
+  const provider = options.provider ?? "google.com";
+  const postBody = `id_token=${encodeURIComponent(JSON.stringify(claims))}&providerId=${provider}`;
   const url = `http://${host}/identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=fake-api-key`;
   const response = await fetch(url, {
     method: "POST",

@@ -24,17 +24,20 @@ export const POST = defineRoute({
   input: CreateTodoInput,  // what the operation receives
   output: TodoOutput,      // what the caller gets back
   run: createTodo,         // the operation
-  status: 201,             // optional, defaults to 200
+  status: 201,             // optional: 200 (default), 201 or 202
 });
 ```
 
 For each request, `defineRoute` does these steps in order:
 
-1. **Checks the sign-in.** Not signed in → 401. Not a verified `@bc.edu` Google account → 403.
+1. **Checks the sign-in.** It must be a verified `@bc.edu` account that signed in with Google itself (not another sign-in provider) within the last 5 days.
+   - Not signed in, or signed in more than 5 days ago → 401, and the person signs in with Google again. Someone whose BC account was suspended can't.
+   - Signed in, but not that kind of account → 403.
+   - Firebase can't be reached → 500, and the problem is logged.
 2. **Asks `allow`.** No → 403, before the input is even read.
-3. **Reads and checks the input.** It combines the query string, the JSON body and the URL's `[id]`-style values, and checks them against `input`. Invalid → 400 with what's wrong. Values from the URL always win, so a body can't swap in a different id.
+3. **Reads and checks the input.** `GET` requests send it in the query string (`?status=open`); other requests send a JSON body of at most 1 MB (larger → 413). The URL's `[id]`-style values are added last, so nothing can swap in a different id, and they can't contain `/` (an encoded `/` could reach a different database record). The result is checked against `input`. Invalid → 400 with what's wrong.
 4. **Runs the operation** with the signed-in person and the checked input.
-5. **Sends back only the fields `output` names.** Anything else the operation returned is dropped.
+5. **Sends back only the fields `output` names.** Anything else the operation returned is dropped. This holds for normal `z.object(...)` schemas; `.passthrough()`, `z.looseObject`, `z.record`, `z.any()` and `z.unknown()` let extra fields through, so don't use them in output schemas.
 
 Every response tells caches never to keep it. If anything crashes, the caller gets a plain 500 and the details go to the log.
 
@@ -80,6 +83,8 @@ const todos = await callApi({ path: "/api/todos", query: { status: "open" }, out
 `signIn()` opens Google sign-in. `useSignedInUser()` says who is signed in. `useSignOut()` signs out and clears loaded data, for shared computers.
 
 ## Rules
+
+- **Turn on only Google sign-in** in the app's Firebase project. The package refuses other providers anyway, but there's no reason to offer them.
 
 - **No public routes.** Every route needs a signed-in BC user. There's no way to build one that doesn't.
 - **No hand-written handlers.** Build every `GET`, `POST`, etc. with `defineRoute`. Each app's every-route test uses `isBuiltByPackage` to fail on anything else.
