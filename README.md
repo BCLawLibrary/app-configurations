@@ -1,15 +1,39 @@
-# shared-packages
+# shared-packages (archived)
 
-Shared configuration and code for BC Law Next.js apps. Each app installs these packages instead of keeping its own copies, so a change happens in one place and reaches every app through a Dependabot PR.
+> **This repo is archived and read-only.** These packages were published to npm but have not been used by a BC Law application. The same code now lives as plain files in the BC Law app nextjs template repository, and new nextjs apps start from that template. The npm packages are deprecated and will eventually be deleted from npmjs.com. The NPM organization @bclawlibrary is still accessible if we do decide publishing packages makes sense for scaling, although that is not obviously needed as of November 2026.
+>
+> The repo stays as a record of the code as it was when it was archived. To see whether an app's copy of the shared files has changed since, compare it against this repo.
 
-| Package | What it gives an app |
-|---|---|
-| [`@bclawlibrary/eslint-config`](packages/eslint-config) | Next.js lint rules plus our guardrails: size, complexity, functional style, accessibility |
-| [`@bclawlibrary/tsconfig`](packages/tsconfig) | Extra TypeScript strictness on top of the `tsconfig.json` Next.js generates |
-| [`@bclawlibrary/prettier-config`](packages/prettier-config) | Prettier defaults plus Tailwind class sorting |
-| [`@bclawlibrary/firebase-routes`](packages/firebase-routes) | The standard way to build API routes: every route needs a signed-in BC user (Google sign-in through Firebase), with the browser code to sign in and call them |
+| Package | What it was for | Last version |
+|---|---|---|
+| [`@bclawlibrary/eslint-config`](packages/eslint-config) | Next.js lint rules plus our guardrails: size, complexity, functional style, accessibility | 2.0.0 |
+| [`@bclawlibrary/tsconfig`](packages/tsconfig) | Extra TypeScript strictness on top of the `tsconfig.json` Next.js generates | 1.0.1 |
+| [`@bclawlibrary/prettier-config`](packages/prettier-config) | Prettier defaults plus Tailwind class sorting | 1.0.1 |
+| [`@bclawlibrary/firebase-routes`](packages/firebase-routes) | The standard way to build API routes: every route needs a signed-in BC user (Google sign-in through Firebase), with the browser code to sign in and call them | 0.1.0 on npm; 0.2.0 (security-review fixes) is in this repo only and was never published |
 
-The packages are public on [npm](https://www.npmjs.com/org/bclawlibrary), so installing them needs no token or account. You need Node.js 22.13 or newer.
+## Why it was archived
+
+A shared package needs someone to own its releases, and the ATR team is relatively small to make that one person's job right now. Keeping the same files in the template means:
+
+- no npm releases to maintain;
+- each app owns its own copy of the configuration files and firebase route logic;
+- a change to a shared file is a normal pull request in the template repository.
+
+## If packages make sense again
+
+Packaging shared code is still the better setup in the long run. Copies drift, and every app has to pick up a fix by hand. Bring packages back when both of these are true:
+
+- **At least two people can own the releases.** They need to understand npm versioning, publishing and the `bclawlibrary` npm organization, and a single person leaving shouldn't strand the packages.
+- **Several apps share the code.** A package pays for itself once two or three live apps would otherwise each copy and patch the same files.
+
+If that happens, don't unarchive this repo. Start a new one from what the template has by then, since the template's copies will be the current ones. And you can just point claude or any other agent to this repository as an example for how to set up the new repository for packages. This repo still shows how it was set up the first time:
+
+- npm workspaces;
+- a Check workflow on every pull request;
+- tag-triggered publishing from GitHub Actions with trusted publishing;
+- Dependabot upgrade PRs in each app.
+
+Choose new package names or new major versions, so nobody gets the old deprecated releases by mistake.
 
 ---
 
@@ -24,25 +48,23 @@ Starts from `eslint-config-next` (Core Web Vitals + TypeScript), then adds:
 | Size | `max-lines-per-function` | 100 lines (blank lines and comments don't count) |
 | Size | `max-lines` | 150 lines per `.ts` / `.tsx` file |
 | Size | `react/no-multi-comp` | One component per file |
-| Complexity | `sonarjs/cognitive-complexity` | A score of how hard a function is to follow, max 15. Each `if`, `else`, loop, `switch`, `catch`, ternary or `&&` / `\|\|` chain adds a point, and more when it's nested inside another. Short functions can still fail if their logic is tangled. |
+| Complexity | `sonarjs/cognitive-complexity` | Max 15 |
 | Complexity | `max-depth` | 3 levels of nesting |
-| Complexity | `max-params` | 3 parameters (pass an options object instead) |
-| Complexity | `max-nested-callbacks` | A function passed inside a function passed inside another, max 3 deep. For example, a `.map` inside a `.then` inside a `useEffect` is 3. Go deeper and pull the inner one out into a named function. |
+| Complexity | `max-params` | 3 parameters |
+| Complexity | `max-nested-callbacks` | 3 deep |
 | Functional style | `functional/no-let` | Use `const` |
 | Functional style | `functional/no-loop-statements` | Use `map` / `filter` / `reduce` |
 | Functional style | `functional/no-classes`, `functional/no-this-expressions` | Functions only |
-| Functional style | `functional/immutable-data` | Don't change data in place: return new data (`toSorted`, spread) |
+| Functional style | `functional/immutable-data` | Don't change data in place |
 | Functional style | `no-param-reassign` (with `props: true`) | Don't change a function's inputs |
 | Async | `@typescript-eslint/no-floating-promises` | Every promise is awaited or handled |
 | Accessibility | `jsx-a11y` strict set, as errors | Keyboard support, labels, alt text, valid ARIA |
-| Data fetching | `@tanstack/eslint-plugin-query` recommended set | TanStack Query mistakes, such as a cache key that leaves out something the request uses, or a new `QueryClient` on every render |
-| Icons | `no-restricted-imports`, `react/forbid-elements` | Font Awesome's free icons only: `FontAwesomeIcon` from `@fortawesome/react-fontawesome` with icons from `@fortawesome/free-solid-svg-icons`, `free-regular-svg-icons` or `free-brands-svg-icons`. No Pro packages or kits, no other icon libraries, no hand-written `<svg>` |
+| Data fetching | `@tanstack/eslint-plugin-query` recommended set | TanStack Query mistakes |
+| Icons | `no-restricted-imports`, `react/forbid-elements` | Font Awesome's free icons only; no Pro packages, other icon libraries or hand-written `<svg>` |
 
-**Test files** (`*.test.ts`, `*.test.tsx`) are exempt from the function length, one-component and nested-callback rules.
+Test files (`*.test.ts`, `*.test.tsx`) are exempt from the function length, one-component and nested-callback rules.
 
 ### TypeScript (`@bclawlibrary/tsconfig`)
-
-Adds these flags on top of the app's own `tsconfig.json`, which Next.js creates and keeps up to date:
 
 | Flag | Catches |
 |---|---|
@@ -54,163 +76,11 @@ Adds these flags on top of the app's own `tsconfig.json`, which Next.js creates 
 
 ### Prettier (`@bclawlibrary/prettier-config`)
 
-Prettier's defaults plus `prettier-plugin-tailwindcss`, which sorts Tailwind classes into a consistent order. Apps use the `src/` folder layout, because the plugin reads `./src/app/globals.css`.
+Prettier's defaults plus `prettier-plugin-tailwindcss`.
 
----
+### firebase-routes
 
-## Editor setup
-
-Optional: lint, type checks and formatting also run in CI.
-
-- **Zed:** nothing to install. The template's `.zed/settings.json` formats and fixes on save.
-- **VS Code:** install the **ESLint** and **Prettier** extensions. The template's `.vscode/settings.json` formats on save. If VS Code asks **"Use workspace version of TypeScript?"**, choose **Allow**.
-
----
-
-## Adding the packages to an app
-
-New apps start from our **template repository** (GitHub's **Use this template** button), which already includes steps 1–6. For a new app, skip to [step 7](#7-settings-that-the-template-repository-cant-copy).
-
-Steps 1–6 are only for building the template itself, or for adding the packages to an older app (like the events calendar).
-
-### 1. Install
-
-```bash
-npm i -D "@bclawlibrary/eslint-config" "@bclawlibrary/tsconfig" "@bclawlibrary/prettier-config" "eslint@^10" eslint-config-next prettier "typescript@~6.0.0"
-```
-
-Keep `eslint-config-next` on the same version as `next`. A few `ERESOLVE overriding peer dependency` warnings are expected and harmless.
-
-### 2. `tsconfig.json`
-
-Keep the file `create-next-app` generated and add one line at the top:
-
-```json
-{
-  "extends": "@bclawlibrary/tsconfig",
-  "compilerOptions": { "...": "leave as generated" }
-}
-```
-
-### 3. `eslint.config.mjs`
-
-```js
-import { defineConfig, globalIgnores } from "eslint/config";
-import bclaw from "@bclawlibrary/eslint-config";
-
-export default defineConfig([
-  ...bclaw,
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
-]);
-```
-
-### 4. `package.json`
-
-```json
-{
-  "prettier": "@bclawlibrary/prettier-config",
-  "scripts": {
-    "lint": "eslint --max-warnings 0",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
-  }
-}
-```
-
-`--max-warnings 0` makes warnings fail too. Run `npm run format` once after `create-next-app`.
-
-### 5. Line endings (`.gitattributes`)
-
-Add `.gitattributes` to the app root so every computer uses the line endings Prettier expects:
-
-```
-* text=auto eol=lf
-```
-
-### 6. CI
-
-Run these on every pull request:
-
-```bash
-npm run lint
-npx tsc --noEmit
-npm run format:check
-```
-
-### 7. Settings that the template repository can't copy
-
-Turn on Dependabot alerts and security updates in the new repo's settings.
-
----
-
-## Turning a rule off
-
-Prefer fixing the code. When a rule genuinely doesn't fit, disable it **on that line, with a reason**, so it shows up in review:
-
-```ts
-// eslint-disable-next-line functional/no-loop-statements -- uploads must run one at a time, in order
-for (const file of files) {
-  await upload(file);
-}
-```
-
-Don't loosen rules in an app's `eslint.config.mjs`. If a rule is wrong for everyone, change it here instead.
-
----
-
-## Working on this repo
-
-```bash
-npm install
-npm run check
-```
-
-`npm run check` runs every package's type check, build and tests (packages without them are skipped). The **Check** workflow runs the same command on every pull request and on every push to `main`, and the publish workflow runs it again before releasing.
-
----
-
-## Releasing a change
-
-Each package is versioned and published on its own. Pushing a tag named `<package>-v<version>` publishes that package from GitHub Actions, so nobody needs to sign in to npm.
-
-1. On a branch, bump the version along with your change, then open a pull request and merge it:
-
-   ```bash
-   npm version minor --workspace packages/eslint-config
-   ```
-
-   This updates both the package's `package.json` and the repo's `package-lock.json`. Commit both.
-
-2. After merging, tag the merged commit on `main`:
-
-   ```bash
-   git switch main
-   git pull
-   git tag eslint-config-v1.1.0
-   git push origin eslint-config-v1.1.0
-   ```
-
-3. In the repo's **Actions** tab, open the waiting "Publish package" run → **Review deployments** → approve `npm`.
-
-Which version number to bump:
-
-| Change | Bump |
-|---|---|
-| Loosening a rule, fixing a bug, docs | `patch` or `minor` |
-| Adding a rule as a warning | `minor` |
-| Adding a rule as an error, or tightening a limit | `major` (apps may need code changes) |
-
-After the release, Dependabot opens an upgrade PR in each app, and that app's CI shows whether the change breaks anything.
-
-The npm organization `bclawlibrary` is owned by the `bclaw-atr-team` account. Its login is in the LAW.ATR vault in 1Password, for admin tasks only.
-
----
-
-## Version notes
-
-- **ESLint 10:** ESLint 9 is no longer supported.
-- **TypeScript `~6.0`:** our lint tools don't support newer TypeScript yet, so each app's Dependabot config holds it back. Lift both once `typescript-eslint` supports it.
-- **`eslint-plugin-jsx-a11y` override:** the plugin doesn't officially support ESLint 10 yet, so without help the repo won't install. The `overrides` entry in the root `package.json` lets it use the repo's ESLint 10. Remove it once the plugin supports ESLint 10.
+See [its README](packages/firebase-routes/README.md).
 
 ---
 
@@ -218,15 +88,15 @@ The npm organization `bclawlibrary` is owned by the `bclaw-atr-team` account. It
 
 ```
 shared-packages/
-├── package.json              npm workspaces root (private, never published), `npm run check`
-├── package-lock.json         exact versions, used by CI
+├── package.json              npm workspaces root (private, never published)
+├── package-lock.json
 ├── .gitattributes            forces LF line endings
 ├── .github/workflows/
-│   ├── check.yml             runs `npm run check` on every pull request
-│   └── publish.yml           checks, then publishes a package when its tag is pushed
+│   ├── check.yml             ran type checks, builds and tests on every pull request
+│   └── publish.yml           published a package when its tag was pushed
 └── packages/
-    ├── eslint-config/        index.mjs, package.json
-    ├── tsconfig/             tsconfig.json, package.json
-    ├── prettier-config/      index.mjs, package.json
-    └── firebase-routes/      src/, README.md, package.json (built to dist/ when published)
+    ├── eslint-config/
+    ├── tsconfig/
+    ├── prettier-config/
+    └── firebase-routes/
 ```
